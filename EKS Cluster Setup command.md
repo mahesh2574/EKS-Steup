@@ -93,8 +93,8 @@ eksctl version
 ```bash
 eksctl create cluster \
   --name my-eks22 \
-  --region ap-south-1 \
-  --zones ap-south-1a,ap-south-1b \
+  --region us-east-1 \
+  --zones us-east-1a,us-east-1b \
   --version 1.30 \
   --without-nodegroup
 ```
@@ -106,7 +106,7 @@ eksctl create cluster \
 ```bash
 eksctl utils associate-iam-oidc-provider \
   --cluster my-eks22 \
-  --region ap-south-1 \
+  --region us-east-1 \
   --approve
 ```
 
@@ -117,16 +117,16 @@ eksctl utils associate-iam-oidc-provider \
 ```bash
 eksctl create nodegroup \
   --cluster my-eks22 \
-  --region ap-south-1 \
+  --region us-east-1 \
   --name node2 \
   --node-type t3.medium \
-  --nodes 3 \
+  --nodes 2 \
   --nodes-min 2 \
-  --nodes-max 4 \
-  --node-volume-size 20 \
+  --nodes-max 2 \
+  --node-volume-size 8 \
   --managed \
   --ssh-access \
-  --ssh-public-key Key \
+  --ssh-public-key CICD \
   --asg-access \
   --full-ecr-access \
   --alb-ingress-access
@@ -138,7 +138,7 @@ eksctl create nodegroup \
 
 ```bash
 aws eks update-kubeconfig \
-  --region ap-south-1 \
+  --region us-east-1 \
   --name my-eks22
 ```
 
