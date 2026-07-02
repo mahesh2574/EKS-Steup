@@ -4,9 +4,9 @@ This guide explains how to create an Amazon EKS Cluster using `eksctl`.
 
 ---
 
-# 1. Create IAM User
+# 1. Create IAM Role
 
-Create an IAM user with **Programmatic Access**.
+Create an IAM Role with **Programmatic Access**.
 
 Attach the following AWS Managed Policies:
 
