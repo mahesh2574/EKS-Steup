@@ -1,0 +1,163 @@
+1) First Create a user in AWS IAM with any name
+Attach Policies to the newly created user
+below policies
+AmazonEC2FullAccess
+
+AmazonEKS_CNI_Policy
+AmazonEKSClusterPolicy
+AmazonEKSWorkerNodePolicy
+AWSCloudFormationFullAccess
+
+IAMFullAccess
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "VisualEditor0",
+            "Effect": "Allow",
+            "Action": "eks:*",
+            "Resource": "*"
+        }
+    ]
+}
+Attach this policy to your user as well
+
+
+2) AWSCLI:
+  ========
+curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o awscliv2.zip
+sudo apt update
+sudo apt install unzip -y
+unzip awscliv2.zip
+sudo ./aws/install
+aws --version
+aws --configure
+aws sts get-caller-identity
+
+3)  KUBECTL:
+    =========
+## KUBECTL
+
+```bash
+curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+
+chmod +x kubectl
+
+sudo mv kubectl /usr/local/bin/
+
+kubectl version --client
+```
+
+4) EKSCTL:
+   =======
+curl --silent --location \
+"https://github.com/eksctl-io/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" \
+| tar xz -C /tmp
+sudo mv /tmp/eksctl /usr/local/bin
+eksctl version
+
+5) Create EKS CLUSTER:
+   ===================
+eksctl create cluster \
+  --name my-eks22 \
+  --region ap-south-1 \
+  --version 1.30 \
+  --zones ap-south-1a,ap-south-1b \
+  --without-nodegroup
+
+eksctl utils associate-iam-oidc-provider \
+    --cluster my-eks22 \
+    --region ap-south-1 \
+    --approve
+
+eksctl create nodegroup \
+    --cluster my-eks22 \
+    --region ap-south-1 \
+    --name node2 \
+    --node-type t3.medium \
+    --nodes 3 \
+    --nodes-min 2 \
+    --nodes-max 4 \
+    --node-volume-size 20 \
+    --managed \
+    --ssh-access \
+    --ssh-public-key Key \
+    --asg-access \
+    --full-ecr-access \
+    --alb-ingress-access
+Open INBOUND TRAFFIC IN ADDITIONAL Security Group
+6) Update Kubeconfig:
+=====================
+aws eks update-kubeconfig \
+    --region ap-south-1 \
+    --name my-eks22
+
+Create Servcie account/ROLE/BIND-ROLE/Token
+Create Service Account, Role & Assign that role, And create a secret for Service Account and geenrate a Token
+6) Creating Service Account:
+   ========================
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: jenkins
+  namespace: webapps
+
+7) Create Role
+   ============
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: app-role
+  namespace: webapps
+rules:
+  - apiGroups:
+        - ""
+        - apps
+        - autoscaling
+        - batch
+        - extensions
+        - policy
+        - rbac.authorization.k8s.io
+    resources:
+      - pods
+      - secrets
+      - componentstatuses
+      - configmaps
+      - daemonsets
+      - deployments
+      - events
+      - endpoints
+      - horizontalpodautoscalers
+      - ingress
+      - jobs
+      - limitranges
+      - namespaces
+      - nodes
+      - pods
+      - persistentvolumes
+      - persistentvolumeclaims
+      - resourcequotas
+      - replicasets
+      - replicationcontrollers
+      - serviceaccounts
+      - services
+    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+Bind the role to service account
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: app-rolebinding
+  namespace: webapps 
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: app-role 
+subjects:
+- namespace: webapps 
+  kind: ServiceAccount
+  name: jenkins 
+
+8) Generate token using service account in the namespace
+=========================================================
+
+kubectl create token jenkins -n webapps
