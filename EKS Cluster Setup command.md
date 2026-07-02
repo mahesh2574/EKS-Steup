@@ -53,7 +53,7 @@ sudo ./aws/install
 
 aws --version
 
-aws configure
+##aws configure##
 
 aws sts get-caller-identity
 ```
