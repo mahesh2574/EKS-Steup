@@ -1,0 +1,72 @@
+# Amazon EKS Cluster Setup
+
+Complete guide for creating an Amazon EKS cluster using `eksctl`.
+
+---
+
+## Prerequisites
+
+- AWS Account
+- IAM User
+- Ubuntu 22.04 EC2
+- AWS CLI
+- kubectl
+- eksctl
+
+---
+
+## Install AWS CLI
+
+```bash
+...
+```
+
+---
+
+## Install kubectl
+
+```bash
+...
+```
+
+---
+
+## Install eksctl
+
+```bash
+...
+```
+
+---
+
+## Create EKS Cluster
+
+```bash
+...
+```
+
+---
+
+## Create Managed Node Group
+
+```bash
+...
+```
+
+---
+
+## Verify Cluster
+
+```bash
+kubectl get nodes
+
+kubectl get pods -A
+```
+
+---
+
+## Cleanup
+
+```bash
+eksctl delete cluster --name my-eks22 --region ap-south-1
+```
